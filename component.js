@@ -23,23 +23,45 @@ class Comment extends React.Component {
 }
 
 class CommentBox extends React.Component {
+  // constructor to hide comments (initially) aka set showComments to false
+  constructor () {
+    super();
+
+    this.state = {
+      showComments: false
+    };
+  }
+
   render() {
      const comments = this._getComments();
+     // show/hide components using state
+     let commentNodes;
+     let buttonText = 'Show comments';
+     if (this.state.showComments) {
+        buttonText = 'Hide comments';
+     // refers to comments in commentList; JSX can render arrays
+        commentNodes = <div className="comment-list">{comments}</div>;
+     }
+
      return( 
-      <div class="comment-box">
+      <div className="comment-box">
         <h3>Comments</h3>
-        <h4 class="comment-count">
+        <button onClick={this._handleClick.bind(this)}>{buttonText}</button>
+        <h4 className="comment-count">
           {/* 0-multiple comments */}
           {this._getCommentsTitle(comments.length)}
         </h4>
-          <div class="comment-list">
-            {/* refers to comments in commentList; JSX can render arrays */}
-            {comments}
-          </div>
+        {commentNodes}
       </div>
 
       );
     }
+
+  _handleClick() {
+    this.setState( {
+      showComments: !this.state.showComments
+    });
+  }
 
   _getComments() { // return array of JSX elements
     const commentList = [
@@ -63,12 +85,13 @@ class CommentBox extends React.Component {
       return '1 comment'; 
     } else {
       return `${commentCount} comments`; // string template syntax
+
     }
   }
 
 }
 
 ReactDOM.render(
-  <CommentBox />, // StoryBox: React Component; written in camel-case
+  <CommentBox />, // CommentBox: React Component; written in camel-case
   document.getElementById('comment-box') // story-app: HTML element with 'story-app' ID
 );
