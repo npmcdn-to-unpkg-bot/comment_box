@@ -28,7 +28,11 @@ class CommentBox extends React.Component {
     super();
 
     this.state = {
-      showComments: false
+      showComments: false,
+      comments: [
+        { id: 1, author: 'Morgan Circuit', body: 'Great Picture!'},
+        { id: 2, author: 'Bending Bender', body: 'Excellent Stuff'}
+      ]
     };
   }
 
@@ -45,6 +49,7 @@ class CommentBox extends React.Component {
 
      return( 
       <div className="comment-box">
+        <CommentForm addComment={this._addComment.bind(this)} />
         <h3>Comments</h3>
         <button onClick={this._handleClick.bind(this)}>{buttonText}</button>
         <h4 className="comment-count">
@@ -64,12 +69,8 @@ class CommentBox extends React.Component {
   }
 
   _getComments() { // return array of JSX elements
-    const commentList = [
-      { id: 1, author: 'Morgan Circuit', body: 'Great Picture!'},
-      { id: 2, author: 'Bending Bender', body: 'Excellent Stuff'}
-    ];
-
-   return commentList.map( (comment) => {    // return a new component for each
+    
+   return this.state.comments.map( (comment) => {    // return a new component for each
     return (                                 // element in commentList
       <Comment 
         author={comment.author} body={comment.body} key={comment.id} /> // accessing comment properties
@@ -89,6 +90,44 @@ class CommentBox extends React.Component {
     }
   }
 
+  _addComment(author, body) {
+    const comment = {
+      id: this.state.comments.length + 1,
+      author,
+      body
+    };
+
+    this.setState({comments: this.state.comments.concat([comment])});
+  }
+
+}
+
+class CommentForm extends React.Component {
+  render() {
+    return (
+      <form className="comment-form" onSubmit={this._handleSubmit.bind(this)}>
+        <label>Join the Discussion</label>
+        <div className="comment-form-fields">
+          <input placeholder="Name:" ref={(input) => this._author = input} />
+          <textarea placeholder="Comment:" ref={(textarea) => this._body = textarea}></textarea>
+        </div>
+        <div className="comment-form-actions">
+          <button type="submit">
+            Post Comment
+          </button>
+        </div>
+      </form>
+      );
+  }
+
+  _handleSubmit(event) {
+    event.preventDefault(); // prevent page reload when form is submitted
+
+    let author = this._author;
+    let body = this._body;
+
+    this.props.addComment(author.value, body.value);
+  }
 }
 
 ReactDOM.render(
