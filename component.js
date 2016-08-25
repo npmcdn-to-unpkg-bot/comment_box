@@ -29,10 +29,7 @@ class CommentBox extends React.Component {
 
     this.state = {
       showComments: false,
-      comments: [
-        { id: 1, author: 'Morgan Circuit', body: 'Great Picture!'},
-        { id: 2, author: 'Bending Bender', body: 'Excellent Stuff'}
-      ]
+      comments: []
     };
   }
 
@@ -98,6 +95,28 @@ class CommentBox extends React.Component {
     };
 
     this.setState({comments: this.state.comments.concat([comment])});
+  }
+
+  componentWillMount() {
+    _fetchComments(); // fetch comments from API before component rendered
+  }
+
+  componentDidMount () { // call after component render
+    this._timer = setInterval(() => this._fetchComments(), 5000); // pull info from server every 5 secs
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._timer); //run when component is to be removed from DOM
+  }
+
+  _fetchComments() {
+    jQuery.ajax({
+      method: 'GET',
+      url: '/api/comments',
+      success: (comments) => {
+        this.setState({comments}) //refers to CommentBox
+      }
+    });
   }
 
 }
